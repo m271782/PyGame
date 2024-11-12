@@ -9,8 +9,11 @@ screen_width, screen_height = 800, 600
 screen = pygame.display.set_mode((screen_width, screen_height))
 pygame.display.set_caption("Color Match Catch Game")
 
-#background tiles
-background_image = pygame.image.load('PNG/Retina/fishTile_089.png').convert()
+###########################background tiles
+background_image = pygame.image.load('tile_73.png').convert()
+
+
+###########################
 
 #fish images
 fish_images = {
@@ -94,8 +97,7 @@ while running:
     #basket
     pygame.draw.rect(screen, all_colors[current_color], (basket_x, basket_y, basket_width, basket_height))
 
-    if (not falling_objects or 
-        (falling_objects[-1]['x'] < screen_width * (1 - spawn_rate_modifier))):
+    if (not falling_objects or (falling_objects[-1]['x'] < screen_width * (1 - spawn_rate_modifier))):
         fish_size = random.randint(50, 120)  #fish size
         new_object = {
             'x': screen_width,
