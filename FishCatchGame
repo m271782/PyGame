@@ -9,11 +9,20 @@ screen_width, screen_height = 800, 600
 screen = pygame.display.set_mode((screen_width, screen_height))
 pygame.display.set_caption("Color Match Catch Game")
 
-###########################background tiles
+#background tiles
 background_image = pygame.image.load('tile_73.png').convert()
+background_tile_width = background_image.get_width()
+background_tile_height = background_image.get_height()
 
+#background surface
+background_surface_width = screen_width * 50  # Make it much larger to keep scrolling
+background_surface = pygame.Surface((background_surface_width, screen_height))
 
-###########################
+for x in range(0, background_surface_width, background_tile_width):
+    for y in range(0, screen_height, background_tile_height):
+        background_surface.blit(background_image, (x, y))
+
+background_speed = 2 
 
 #fish images
 fish_images = {
@@ -24,7 +33,7 @@ fish_images = {
     'brown': pygame.image.load("PNG/Retina/fishTile_101.png").convert_alpha(),
 }
 
-#flip fish
+#flip fish imgs
 for color in fish_images:
     fish_images[color] = pygame.transform.flip(fish_images[color], True, False)
 
@@ -37,9 +46,9 @@ all_colors = {
     'brown': (170, 100, 60),
 }
 color_names = list(all_colors.keys())
-available_colors = color_names[:3]  #start with three colors
+available_colors = color_names[:3]  # Start with three colors
 
-#basket settings
+#hook settings
 basket_width, basket_height = 20, 100
 basket_x = 50
 basket_y = screen_height // 2 - basket_height // 2
@@ -48,12 +57,11 @@ current_color_index = 0
 current_color = available_colors[current_color_index]
 last_space_pressed = False
 
-#object settings
-base_object_speed = 3
+#fish settings
+base_object_speed = 4
 object_speed = base_object_speed
-spawn_rate_modifier = 0.5 
+spawn_rate_modifier = .3
 falling_objects = []
-
 
 clock = pygame.time.Clock()
 running = True
@@ -63,15 +71,20 @@ level_up_shown = False
 game_won = False
 fish_swim_angle = 0
 
-
 font = pygame.font.SysFont("freesans", 48)
 
-while running:
-    #background
-    for x in range(0, screen_width, background_image.get_width()):
-        for y in range(0, screen_height, background_image.get_height()):
-            screen.blit(background_image, (x, y))
+#background strts on the right
+background_x = -background_surface_width + screen_width
 
+
+##############################################
+
+while running:
+    background_x += background_speed
+    screen.blit(background_surface, (background_x, 0))
+    screen.blit(background_surface, (background_x + background_surface_width, 0))
+
+    #quit
     for event in pygame.event.get():
         if event.type == pygame.QUIT:
             running = False
@@ -85,57 +98,57 @@ while running:
     elif not keys[pygame.K_SPACE]:
         last_space_pressed = False
 
-    #keys
+    #up/down keys
     if keys[pygame.K_UP]:
         basket_y -= basket_speed
     if keys[pygame.K_DOWN]:
         basket_y += basket_speed
 
-    #boundaries for basket
+    #hook
     basket_y = max(0, min(screen_height - basket_height, basket_y))
 
-    #basket
     pygame.draw.rect(screen, all_colors[current_color], (basket_x, basket_y, basket_width, basket_height))
 
     if (not falling_objects or (falling_objects[-1]['x'] < screen_width * (1 - spawn_rate_modifier))):
-        fish_size = random.randint(50, 120)  #fish size
+        fish_size = random.randint(50, 120)
         new_object = {
             'x': screen_width,
             'y': random.randint(0, screen_height - fish_size),
             'color': random.choice(available_colors),
             'size': fish_size,
-            'swim_angle': random.uniform(-math.pi / 4, math.pi / 4),
+            'swim_angle': random.uniform(-math.pi / 8, math.pi / 8),
         }
         new_object['image'] = pygame.transform.scale(fish_images[new_object['color']], (new_object['size'], new_object['size'] // 2))
         falling_objects.append(new_object)
 
-    #move fish
-    for obj in falling_objects[:]:
-        obj['x'] -= object_speed
-        
-        #swimming
-        obj['y'] += math.sin(obj['swim_angle']) * 2
-        obj['swim_angle'] += 0.3
+##########
 
-        obj['y'] = max(0, min(screen_height - obj['size'] // 2, obj['y']))
+    for i in falling_objects[:]:
+        i['x'] -= object_speed
         
-        screen.blit(obj['image'], (obj['x'], obj['y']))
+        #tilt fish
+        i['swim_angle'] += .1
+        i['y'] += math.sin(i['swim_angle']) * 2  # Fish going up and down as it swims
+        
+        i['y'] = max(0, min(screen_height - i['size'] // 2, i['y']))
+        
+        screen.blit(i['image'], (i['x'], i['y']))
 
-        #check if object is caught by the basket
-        if (basket_x < obj['x'] < basket_x + basket_width and
-                basket_y < obj['y'] + obj['size'] // 2 and obj['y'] < basket_y + basket_height):
-            if obj['color'] == current_color:
+        #check if fish caught
+        if (basket_x < i['x'] < basket_x + basket_width and
+                basket_y < i['y'] + i['size'] // 2 and i['y'] < basket_y + basket_height):
+            if i['color'] == current_color:
                 score += 1 
             else:
                 score -= 1
-            falling_objects.remove(obj)
+            falling_objects.remove(i)
 
         #kill objects that go out of screen
-        if obj['x'] < 0:
-            falling_objects.remove(obj)
+        if i['x'] < 0:
+            falling_objects.remove(i)
             score -= 1
 
-    #check if the score reaches -10
+    #score reaches -10
     if score <= -10:
         loss_text = font.render("You Lost", True, (255, 0, 0))
         screen.blit(loss_text, (screen_width // 2 - 100, screen_height // 2 - 50))
@@ -143,25 +156,25 @@ while running:
         pygame.time.wait(2000)
         running = False
 
-    #level up every 10 points
+    #level up at 10 points
     if score >= points_to_next_level and not level_up_shown:
-        score = 0  #reset score
+        score = 0  # Reset score
         level_up_shown = True
         if len(available_colors) < len(color_names):
             new_color = color_names[len(available_colors)]
             available_colors.append(new_color)
-            object_speed += 0.3  #slight increase in speed eacj level
-            spawn_rate_modifier -= 0.05  #incrementally higher spawn rate each level
+            object_speed += 0.2  #increase in speed each level
+            spawn_rate_modifier -= 0.1  #hhigher spawn rate each level
 
-            #Level up message
-            level_up_text = font.render(f"Next level: adding {new_color}", True, (0, 128, 0))
+            #level up screen
+            level_up_text = font.render(f"Next level: Adding {new_color}", True, (0, 128, 0))
             text_rect = level_up_text.get_rect(center=(screen_width // 2, screen_height // 2))
             screen.blit(level_up_text, text_rect)
             pygame.display.flip()
             pygame.time.wait(2000)
         level_up_shown = False
 
-    #check if player won (score = 10 on last level)
+    #check if has won
     if score == 10 and not game_won:
         win_text = font.render("You Win!", True, (0, 255, 0))
         screen.blit(win_text, (screen_width // 2 - 100, screen_height // 2 - 50))
@@ -169,8 +182,7 @@ while running:
         pygame.time.wait(3000)
         game_won = True 
 
-    #display score
-    font = pygame.font.SysFont(None, 36)
+    #score displsy
     score_text = font.render(f"Score: {score}", True, (0, 0, 0))
     screen.blit(score_text, (10, 10))
 
