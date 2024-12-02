@@ -11,6 +11,6 @@
 3. Run the `FishCatchGame`
 
 ## Game Play Instructions
-1. Use the `up` and `down` arrows to control the basket
-2. Press the `spacebar` to change the color of the basket to match the fish
+1. Use the `up` and `down` arrows to control the hook
+2. Press the `spacebar` to change the color of the hook to match the fish
 

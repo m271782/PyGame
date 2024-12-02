@@ -28,7 +28,7 @@ for x in range(0, rolling_bg, background_tile_w):
     for y in range(0, height, background_tile_h):
         bg_surface.blit(background_tile, (x, y))
 
-background_speed = 2 
+background_speed = 4
 
 #fish images
 fish_images = {
@@ -38,7 +38,7 @@ fish_images = {
     'purple': pygame.image.load("PNG/Retina/fishTile_075.png").convert_alpha(),
     'brown': pygame.image.load("PNG/Retina/fishTile_101.png").convert_alpha(),
     'yellow': pygame.image.load("PNG/fish/yellowfish.png").convert_alpha(),
-    'EELS': pygame.image.load("PNG/Retina/fishTile_103.png").convert_alpha(),
+    'eels': pygame.image.load("PNG/Retina/fishTile_103.png").convert_alpha(),
 }
 
 #flip fish imgs
@@ -53,7 +53,7 @@ all_colors = {
     'purple': (200, 100, 180),
     'brown': (170, 100, 60),
     'yellow': (255, 255, 0),
-    'EELS': (128, 128, 128),
+    'eels': (128, 128, 128),
 }
 color_names = list(all_colors.keys())
 available_colors = color_names[:3]  #start with three colors
@@ -68,9 +68,9 @@ current_color = available_colors[current_color_index]
 last_space_pressed = False
 
 #fish settings
-base_object_speed = 4
+base_object_speed = 7
 object_speed = base_object_speed
-spawn_rate_modifier = .6
+spawn_rate_modifier = .7
 swimming_objects = []
 
 clock = pygame.time.Clock()
@@ -177,7 +177,7 @@ while running:
             spawn_rate_modifier -= 0.05  #hhigher spawn rate each level
 
             #level up screen
-            level_up_text = font.render(f"Next level: Adding {new_color}", True, (255, 174, 66))
+            level_up_text = font.render(f"Next level: Adding {new_color} fish", True, (255, 174, 66))
             text_rect = level_up_text.get_rect(center=(width // 2, height // 2))
             screen.blit(level_up_text, text_rect)
             pygame.display.flip()
