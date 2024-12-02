@@ -47,12 +47,12 @@ for color in fish_images:
 
 #basket colors
 all_colors = {
-    'red': (200, 0, 0),
+    'red': (255, 0 , 0),
     'green': (0, 200, 0),
     'blue': (0, 0, 200),
     'purple': (200, 100, 180),
     'brown': (170, 100, 60),
-    'yellow': (255, 205, 77),
+    'yellow': (255, 255, 0),
     'EELS': (128, 128, 128),
 }
 color_names = list(all_colors.keys())
@@ -193,7 +193,7 @@ while running:
         game_won = True 
 
     #score displsy
-    score_text = font.render(f"Score: {score}", True, (0, 0, 0))
+    score_text = font.render(f"SCORE: {score}", True, (255, 174, 66))
     screen.blit(score_text, (10, 10))
 
     pygame.display.flip()
