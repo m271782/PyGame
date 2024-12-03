@@ -158,8 +158,8 @@ while running:
             swimming_objects.remove(i)
             score -= 1
 
-    #score reaches -10
-    if score <= -10:
+    #score reaches -1:
+    if score < 0:
         loss_text = font.render("You Lost", True, (255, 0, 0))
         screen.blit(loss_text, (width // 2 - 100, height // 2 - 50))
         pygame.display.flip()
@@ -174,7 +174,7 @@ while running:
             new_color = color_names[len(available_colors)]
             available_colors.append(new_color)
             object_speed += 0.2  #increase in speed each level
-            spawn_rate_modifier -= 0.05  #hhigher spawn rate each level
+            spawn_rate_modifier -= 0.05  #higher spawn rate each level
 
             #level up screen
             level_up_text = font.render(f"Next level: Adding {new_color} fish", True, (255, 174, 66))
