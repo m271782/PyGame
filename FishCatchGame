@@ -68,9 +68,9 @@ current_color = available_colors[current_color_index]
 last_space_pressed = False
 
 #fish settings
-base_object_speed = 7
+base_object_speed = 7.5
 object_speed = base_object_speed
-spawn_rate_modifier = .7
+spawn_rate_modifier = .6
 swimming_objects = []
 
 clock = pygame.time.Clock()
@@ -168,7 +168,7 @@ while running:
 
     #level up at 10 points
     if score >= points_to_next_level and not level_up_shown:
-        score = 0  # Reset score
+        points_to_next_level += 10
         level_up_shown = True
         if len(available_colors) < len(color_names):
             new_color = color_names[len(available_colors)]
